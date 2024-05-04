@@ -2,19 +2,6 @@ use core::fmt::{self, Write};
 
 use crate::sbi;
 
-struct Stdout;
-
-impl fmt::Write for Stdout {
-    fn write_str(&mut self, s: &str) -> fmt::Result {
-        puts(s);
-        Ok(())
-    }
-}
-
-pub fn _print(args: fmt::Arguments) {
-    Stdout.write_fmt(args).unwrap();
-}
-
 #[macro_export]
 macro_rules! print {
     ($($arg:tt)*) => {
@@ -28,8 +15,21 @@ macro_rules! println {
     ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
 }
 
-pub fn putchar(ch: char) {
-    sbi::console_putchar(ch as u8 as usize);
+struct Stdout;
+
+impl fmt::Write for Stdout {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        puts(s);
+        Ok(())
+    }
+}
+
+pub fn _print(args: fmt::Arguments) {
+    Stdout.write_fmt(args).unwrap();
+}
+
+pub fn putchar(c: char) {
+    sbi::debug_console_write_byte(c);
 }
 
 pub fn puts(s: &str) {
@@ -37,5 +37,3 @@ pub fn puts(s: &str) {
         putchar(ch);
     }
 }
-
-
