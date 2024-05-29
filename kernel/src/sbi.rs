@@ -3,38 +3,38 @@
 use core::{arch::asm, fmt, mem::transmute};
 
 #[derive(Default)]
-struct SbiFunction(i32, i32); // SbiFunction(fid, eid)
+pub struct SbiCall(i32, i32); // SbiFunction(fid, eid)
 
 // Base Extension
-const GET_SPEC_VERSION: SbiFunction = SbiFunction(0, 0);
-const GET_IMPL_VERSION: SbiFunction = SbiFunction(1, 0);
-const PROBE_EXTENSION: SbiFunction = SbiFunction(2, 0);
-const GET_MVENDORID: SbiFunction = SbiFunction(3, 0);
-const GET_MARCHID: SbiFunction = SbiFunction(4, 0);
-const GET_MIMPID: SbiFunction = SbiFunction(5, 0);
+const GET_SPEC_VERSION: SbiCall = SbiCall(0, 0);
+const GET_IMPL_VERSION: SbiCall = SbiCall(1, 0);
+const PROBE_EXTENSION: SbiCall = SbiCall(2, 0);
+const GET_MVENDORID: SbiCall = SbiCall(3, 0);
+const GET_MARCHID: SbiCall = SbiCall(4, 0);
+const GET_MIMPID: SbiCall = SbiCall(5, 0);
 
 // IPI Extension
-const SEND_IPI: SbiFunction = SbiFunction(0, 0x735049);
+const SEND_IPI: SbiCall = SbiCall(0, 0x735049);
 
 // Debug Console Extension
-const DEBUG_CONSOLE_WRITE: SbiFunction = SbiFunction(0, 0x4442434E);
-const DEBUG_CONSOLE_READ: SbiFunction = SbiFunction(1, 0x4442434E);
-const DEBUG_CONSOLE_WRITE_BYTE: SbiFunction = SbiFunction(2, 0x4442434E);
+const DEBUG_CONSOLE_WRITE: SbiCall = SbiCall(0, 0x4442434E);
+const DEBUG_CONSOLE_READ: SbiCall = SbiCall(1, 0x4442434E);
+const DEBUG_CONSOLE_WRITE_BYTE: SbiCall = SbiCall(2, 0x4442434E);
 
 // System Reset Extension
-const SYSTEM_RESET: SbiFunction = SbiFunction(0, 0x53525354);
+const SYSTEM_RESET: SbiCall = SbiCall(0, 0x53525354);
 
 // Timer Extension
-const SET_TIMER: SbiFunction = SbiFunction(0, 0x54494D45);
+const SET_TIMER: SbiCall = SbiCall(0, 0x54494D45);
 
 // RFENCE Extension
-const REMOTE_FENCE_I: SbiFunction = SbiFunction(0, 0x54494D45);
-const REMOTE_SFENCE_VMA: SbiFunction = SbiFunction(1, 0x54494D45);
-const REMOTE_SFENCE_VMA_ASID: SbiFunction = SbiFunction(2, 0x54494D45);
-const REMOTE_HFENCE_GVMA_VMID: SbiFunction = SbiFunction(3, 0x54494D45);
-const REMOTE_HFENCE_GVMA: SbiFunction = SbiFunction(4, 0x54494D45);
-const REMOTE_HFENCE_VVMA_ASID: SbiFunction = SbiFunction(5, 0x54494D45);
-const REMOTE_HFENCE_VVMA: SbiFunction = SbiFunction(6, 0x54494D45);
+const REMOTE_FENCE_I: SbiCall = SbiCall(0, 0x54494D45);
+const REMOTE_SFENCE_VMA: SbiCall = SbiCall(1, 0x54494D45);
+const REMOTE_SFENCE_VMA_ASID: SbiCall = SbiCall(2, 0x54494D45);
+const REMOTE_HFENCE_GVMA_VMID: SbiCall = SbiCall(3, 0x54494D45);
+const REMOTE_HFENCE_GVMA: SbiCall = SbiCall(4, 0x54494D45);
+const REMOTE_HFENCE_VVMA_ASID: SbiCall = SbiCall(5, 0x54494D45);
+const REMOTE_HFENCE_VVMA: SbiCall = SbiCall(6, 0x54494D45);
 
 #[repr(isize)]
 pub enum SbiError {
@@ -89,7 +89,7 @@ pub fn console_getchar() -> Result<isize, SbiError> {
 }
 
 #[inline(always)]
-fn sbi_call(function: SbiFunction, args: [usize; 6]) -> (isize, isize) {
+fn sbi_call(function: SbiCall, args: [usize; 6]) -> (isize, isize) {
     let error_code: isize;
     let value: isize;
     unsafe {

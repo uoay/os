@@ -10,10 +10,6 @@
 
 .macro SAVE_ALL
     csrrw sp, sscratch, sp
-    bnez sp, from_user
-from_kernel:
-    csrr sp, sscratch
-from_user:
     addi sp, sp, -34*XLENB
     SAVE ra, 1
     SAVE gp, 3
@@ -54,16 +50,15 @@ from_user:
 .endm
 
 .macro LOAD_ALL
-    LOAD t1, 32
-    LOAD t2, 33
-    andi t0, t1, 1 << 8
-    bnez t0, to_kernel
-to_user:
-    addi t0, sp, 34 * XLENB
-    csrw sscratch, t0
-to_kernel:
-    csrw sstatus, t1
-    csrw sepc, t2
+    mv sp, a0
+
+    LOAD t0, 32
+    csrw sstatus, t0
+    LOAD t1, 33
+    csrw sepc, t1
+    LOAD t2, 2
+    csrw sscratch, t2
+
     LOAD ra, 1
     LOAD gp, 3
     LOAD tp, 4
@@ -94,7 +89,9 @@ to_kernel:
     LOAD t4, 29
     LOAD t5, 30
     LOAD t6, 31
-    LOAD sp, 2
+
+    addi sp, sp, 34 * XLENB
+    csrrw sp, sscratch, sp
 .endm
 
     .section .text

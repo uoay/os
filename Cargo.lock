@@ -3,6 +3,10 @@
 version = 3
 
 [[package]]
+name = "common"
+version = "0.1.0"
+
+[[package]]
 name = "critical-section"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -15,9 +19,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "361a90feb7004eca4019fb28352a9465666b24f840f5c3cddf0ff13920590b89"
 
 [[package]]
+name = "hello_world"
+version = "0.1.0"
+dependencies = [
+ "user",
+]
+
+[[package]]
 name = "kernel"
 version = "0.1.0"
 dependencies = [
+ "common",
  "riscv",
 ]
 
@@ -34,3 +46,10 @@ dependencies = [
 [[package]]
 name = "task"
 version = "0.1.0"
+
+[[package]]
+name = "user"
+version = "0.1.0"
+dependencies = [
+ "common",
+]

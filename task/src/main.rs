@@ -1,4 +1,4 @@
-use std::{env, process};
+use std::{env, process, str::FromStr};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -9,10 +9,7 @@ fn main() {
             }
             build(&args[2..=(args.len() - 1)])
         }
-        "run" => {
-            build(&vec!["kernel".to_string()]);
-            run();
-        }
+        "run" => run(),
         _=>panic!("invalid parameter(s)")
     };
 }
@@ -28,25 +25,30 @@ fn build(args: &[String]) {
         .status()
         .unwrap();
     env::set_current_dir(cur).unwrap();
-    if args[0] == "kernel" {
-        handle_kernel();
+    if args[0] == "kernel" || args[0] == "hello_world"  {
+        handle(&args[0]);
     }
 }
 
-fn handle_kernel() {
+fn handle(name: &str) {
     process::Command::new("rust-objcopy")
         .args([
             "--strip-all",
-            "target/riscv64gc-unknown-none-elf/debug/kernel",
+            &format!("{}{}", "target/riscv64gc-unknown-none-elf/debug/", name),
             "-O",
             "binary",
-            "target/riscv64gc-unknown-none-elf/debug/kernel.bin"
+            &format!("{}{}{}", "target/riscv64gc-unknown-none-elf/debug/", name, ".bin"),
         ])
         .status()
         .unwrap();
 }
 
 fn run() {
+    let mut name = String::from_str("hello_world").unwrap();
+    build(&[name]);
+    name = String::from_str("kernel").unwrap();
+    build(&[name]);
+
     process::Command::new("qemu-system-riscv64")
         .args([
             "-machine",
