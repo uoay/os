@@ -4,8 +4,8 @@
 pub mod batch;
 #[macro_use]
 pub mod io;
-pub mod sbi;
 mod lang_items;
+pub mod sbi;
+pub mod sync;
 pub mod system_call;
 pub mod trap;
-pub mod process;
